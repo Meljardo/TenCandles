@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Candles Diagnostic</title>
+<style>
+  body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+  h1 { color: #ffd166; }
+  button { background: #333; color: #ffd166; border: 1px solid #ffd166; padding: 8px 16px; margin: 4px 0; cursor: pointer; }
+  button:hover { background: #444; }
+  .result { padding: 8px; margin: 4px 0; border: 1px solid #444; border-radius: 4px; }
+  .ok { color: #06d6a0; }
+  .fail { color: #ef476f; }
+  code { color: #118ab2; }
+</style>
+</head>
+<body>
+<h1>10 Candles API Diagnostic</h1>
+<p>This page checks your InfinityFree → PebbleHost connection.</p>
+
+<p><strong>API Base:</strong> <code id="apiBase"></code></p>
+
+<button onclick="testAll()">🔍 Run All Tests</button>
+<div id="output"></div>
+
+<script>
+const API_BASE = "https://tencandles.infinityfreeapp.com/api/";
+
+document.getElementById("apiBase").textContent = API_BASE;
+
+async function test(endpoint, method="GET", data=null){
+  const out=document.getElementById("output");
+  const resDiv=document.createElement("div");
+  resDiv.className="result";
+  resDiv.innerHTML=`<strong>${endpoint}</strong> ... testing`;
+  out.appendChild(resDiv);
+
+  try {
+    let res;
+    if(method==="GET"){
+      res=await fetch(API_BASE+endpoint);
+    } else {
+      res=await fetch(API_BASE+endpoint,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(data)});
+    }
+    const text=await res.text();
+    try{
+      const json=JSON.parse(text);
+      resDiv.innerHTML=`<strong>${endpoint}</strong>: <span class="ok">✅ OK</span><br><pre>${JSON.stringify(json,null,2)}</pre>`;
+    }catch{
+      resDiv.innerHTML=`<strong>${endpoint}</strong>: <span class="fail">⚠️ Invalid JSON</span><br><pre>${text}</pre>`;
+    }
+  } catch(e){
+    resDiv.innerHTML=`<strong>${endpoint}</strong>: <span class="fail">❌ FAILED</span><br>${e}`;
+  }
+}
+
+async function testAll(){
+  document.getElementById("output").innerHTML="";
+  await test("get_room.php?room_code=demo");
+  await test("get_players.php?room_code=demo");
+  await test("create_room.php","POST",{room_code:"diagnostic",password:""});
+  await test("add_player.php","POST",{room_code:"diagnostic",player_name:"Tester"});
+  await test("roll_dice.php","POST",{room_code:"diagnostic",count:5});
+  await test("update_room.php","POST",{room_code:"diagnostic",candles:JSON.stringify(Array(10).fill(true)),scene:1,sceneDice:10,truths:"[]",last_roll:"[]"});
+  await test("update_player.php","POST",{room_code:"diagnostic",player_name:"Tester",virtue:"Test",vice:"Check",moment:"DB",brink:"Sync",burned:JSON.stringify({virtue:false,vice:false,moment:false,brink:false})});
+  await test("burn_trait.php","POST",{room_code:"diagnostic",player_name:"Tester",trait:"virtue"});
+}
+</script>
+</body>
+</html>
