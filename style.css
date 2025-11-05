@@ -1,0 +1,33 @@
+body {
+  font-family: system-ui, sans-serif;
+  background: #0a0b0f;
+  color: #f5f5f5;
+  margin: 0;
+  padding: 1.5rem;
+  max-width: 900px;
+  margin-inline: auto;
+}
+h1 { text-align:center; margin-bottom:1rem; }
+.card {
+  background:#10121a;
+  border:1px solid #24273a;
+  border-radius:12px;
+  padding:1rem;
+  margin-bottom:1rem;
+  box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+input,textarea,button {
+  width:100%; margin:0.3rem 0; padding:0.5rem;
+  border-radius:8px; border:1px solid #333;
+  background:#181b26; color:#f5f5f5;
+}
+button { cursor:pointer; background:#ff9b3b; color:#000; font-weight:600; }
+.candles { display:flex; gap:0.4rem; flex-wrap:wrap; }
+.candle {
+  width:32px;height:60px;border-radius:8px;
+  display:flex;align-items:flex-end;justify-content:center;
+  border:1px solid #444;
+}
+.candle.lit { background:radial-gradient(circle at top,#ffd27f,#ff9b3b 60%,#5a3100); }
+.candle.out { background:#343746; }
+.candle span { font-size:0.8rem;margin-bottom:4px; }
