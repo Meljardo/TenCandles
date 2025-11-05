@@ -1,6 +1,6 @@
 // == CONFIGURATION ==
-const API_BASE = "https://your-subdomain.infinityfreeapp.com/api/"; // InfinityFree
-const WS_URL   = "wss://your-relay.onrender.com"; // optional realtime relay
+const API_BASE = "https://tencandles.infinityfreeapp.com/api/"; // InfinityFree
+const WS_URL   = ""; // optional realtime relay
 
 // == STATE ==
 let roomCode=null,playerName=null,state={candles:Array(10).fill(true),scene:1,sceneDice:10,truths:[],last_roll:[]};
