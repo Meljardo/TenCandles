@@ -2,407 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ten Candles – Online Helper</title>
+  <title>Ten Candles Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    :root {
-      font-family: system-ui, sans-serif;
-      background: #05060a;
-      color: #f5f5f5;
-    }
-
-    body {
-      margin: 0;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      max-width: 900px;
-      margin-inline: auto;
-    }
-
-    h1, h2, h3 { margin: 0 0 0.5rem; }
-
-    .card {
-      background: #10121a;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      border: 1px solid #25293a;
-    }
-
-    .candles { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-
-    .candle {
-      width: 32px; height: 60px; border-radius: 8px;
-      display: flex; align-items: flex-end; justify-content: center;
-      cursor: pointer; border: 1px solid #444; position: relative;
-      transition: transform 0.1s;
-    }
-    .candle:hover { transform: translateY(-2px); }
-    .candle.lit {
-      background: radial-gradient(circle at 50% 0%, #ffd27f, #ff9b3b 60%, #5a3100 100%);
-      box-shadow: 0 0 12px rgba(255,200,120,0.9);
-    }
-    .candle.out { background: #343746; box-shadow: none; }
-    .candle span { font-size: 0.8rem; margin-bottom: 4px; }
-    .candle::before {
-      content:""; position:absolute; top:-10px; left:50%;
-      transform:translateX(-50%); width:4px; height:10px;
-      border-radius:999px; background:#f5f5f5;
-    }
-    .candle.out::before { background:#555; }
-    .candle::after {
-      content:""; position:absolute; top:-18px; left:50%;
-      transform:translateX(-50%); width:12px; height:12px;
-      border-radius:50%;
-      background:radial-gradient(circle,#ffe6a8 0%,rgba(255,214,165,0) 75%);
-      opacity:1; pointer-events:none;
-    }
-    .candle.out::after { opacity:0; }
-
-    .flex { display:flex; flex-wrap:wrap; gap:1rem; }
-    .grow { flex:1 1 0; min-width:220px; }
-
-    button {
-      background:#ff8a3c; color:#1a130b; border:none;
-      padding:0.5rem 0.9rem; border-radius:999px;
-      font-weight:600; cursor:pointer; display:inline-flex;
-      align-items:center; gap:0.3rem; margin:0.3rem 0.3rem 0 0;
-    }
-    button.secondary { background:#262a3d; color:#f5f5f5; }
-    button:disabled { opacity:0.5; cursor:default; }
-
-    .stat-line { font-size:0.95rem; opacity:0.9; margin-top:0.25rem; }
-
-    .dice-results {
-      font-family:"Fira Code",monospace; margin-top:0.5rem;
-      display:flex; flex-wrap:wrap; gap:0.4rem;
-    }
-    .die {
-      padding:0.3rem 0.5rem; border-radius:8px;
-      border:1px solid #444; min-width:26px;
-      text-align:center; font-size:0.9rem;
-    }
-    .die.success { border-color:#7CFC00; font-weight:700; }
-    .die.lost { border-color:#ff4a4a; text-decoration:line-through; opacity:0.8; }
-
-    input[type="text"], textarea {
-      width:100%; box-sizing:border-box; padding:0.5rem;
-      border-radius:8px; border:1px solid #3b3f52;
-      background:#0e1017; color:#f5f5f5; resize:vertical;
-    }
-    textarea { min-height:60px; }
-
-    .trait {
-      border-radius:8px; padding:0.5rem 0.7rem;
-      background:#181b26; border:1px solid #33384a;
-      margin-bottom:0.5rem; display:flex;
-      justify-content:space-between; align-items:center; gap:0.5rem;
-    }
-    .trait.burned { opacity:0.5; text-decoration:line-through; }
-    .trait-label { font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; opacity:0.7; }
-
-    .truths-list { margin-top:0.5rem; list-style:none; padding-left:0; }
-    .truths-list li {
-      padding:0.3rem 0; border-bottom:1px dashed #34394b; font-size:0.9rem;
-    }
-    .truth-scene { font-weight:600; opacity:0.8; margin-right:0.3rem; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Ten Candles – Online Helper</h1>
+  <h1>Ten Candles – Online Multiplayer</h1>
 
-  <!-- Candles -->
-  <section class="card">
-    <h2>Candles & Scenes</h2>
-    <div id="candles" class="candles"></div>
-    <div id="candleStats" class="stat-line"></div>
-    <button id="blowOut">Blow Out Next Candle (End Scene)</button>
-    <button id="relight" class="secondary">Relight All (New Game)</button>
-    <div id="sceneStats" class="stat-line"></div>
+  <section id="lobby" class="card">
+    <h2>Join or Create a Room</h2>
+    <input id="roomInput" placeholder="Room code">
+    <input id="passwordInput" placeholder="Password (optional)">
+    <input id="nameInput" placeholder="Your name">
+    <button id="joinRoom">Join Room</button>
   </section>
 
-  <!-- Dice and Truths -->
-  <section class="flex">
-    <div class="card grow">
-      <h2>Dice Pool</h2>
-      <p id="diceStats" class="stat-line"></p>
-      <button id="rollDice">Roll Dice</button>
-      <button id="newScene" class="secondary">Start New Scene</button>
-      <div id="rollOutcome" class="stat-line"></div>
-      <div id="diceResults" class="dice-results"></div>
-    </div>
+  <div id="gameArea" style="display:none;">
+    <section class="card">
+      <h2>Candles</h2>
+      <div id="candles" class="candles"></div>
+      <button id="blowOut">Blow Out Next</button>
+      <button id="relight">New Game</button>
+    </section>
 
-    <div class="card grow">
+    <section class="card">
+      <h2>Dice</h2>
+      <button id="rollDice">Roll Dice</button>
+      <p id="rollResult"></p>
+    </section>
+
+    <section class="card">
       <h2>Truths</h2>
       <textarea id="truthText" placeholder="We are not alone..."></textarea>
       <button id="addTruth">Add Truth</button>
-      <ul id="truthsList" class="truths-list"></ul>
-    </div>
-  </section>
+      <ul id="truthsList"></ul>
+    </section>
 
-  <!-- Traits -->
-  <section class="card">
-    <h2>Players & Traits</h2>
-    <div id="playerInputs">
-      <div class="flex">
-        <div class="grow"><input type="text" id="virtueInput" placeholder="Virtue (Brave...)"></div>
-        <div class="grow"><input type="text" id="viceInput" placeholder="Vice (Jealous...)"></div>
+    <section class="card">
+      <h2>Players</h2>
+      <div id="traitInputs">
+        <input id="virtue" placeholder="Virtue">
+        <input id="vice" placeholder="Vice">
+        <input id="moment" placeholder="Moment">
+        <input id="brink" placeholder="Brink">
+        <button id="saveTraits">Save Traits</button>
       </div>
-      <div class="flex" style="margin-top:0.5rem;">
-        <div class="grow"><input type="text" id="momentInput" placeholder="Moment (Hope when...)"></div>
-        <div class="grow"><input type="text" id="brinkInput" placeholder="Brink (I've seen you...)"></div>
-      </div>
-      <button id="applyTraits">Apply/Update Traits</button>
-      <button id="addPlayer" class="secondary">+ Add Player</button>
-    </div>
-    <div id="traitsDisplay" style="margin-top:0.7rem;"></div>
-  </section>
+      <div id="playersDisplay"></div>
+    </section>
+  </div>
 
-  <script>
-    const state = {
-      candles: Array(10).fill(true),
-      scene: 1,
-      sceneDice: 10,
-      truths: [],
-      lastRoll: null,
-      hopeDieActive: false,
-      players: [
-        { name: "Player 1", traits: {
-          virtue:{text:"",burned:false},
-          vice:{text:"",burned:false},
-          moment:{text:"",burned:false},
-          brink:{text:"",burned:false}
-        }}
-      ]
-    };
-
-    // Elements
-    const candlesEl = document.getElementById("candles");
-    const candleStats = document.getElementById("candleStats");
-    const sceneStats = document.getElementById("sceneStats");
-    const blowOutBtn = document.getElementById("blowOut");
-    const relightBtn = document.getElementById("relight");
-    const diceStats = document.getElementById("diceStats");
-    const rollBtn = document.getElementById("rollDice");
-    const newSceneBtn = document.getElementById("newScene");
-    const rollOutcome = document.getElementById("rollOutcome");
-    const diceResultsDiv = document.getElementById("diceResults");
-    const truthText = document.getElementById("truthText");
-    const addTruthBtn = document.getElementById("addTruth");
-    const truthsList = document.getElementById("truthsList");
-    const applyTraitsBtn = document.getElementById("applyTraits");
-    const addPlayerBtn = document.getElementById("addPlayer");
-    const traitsDisplay = document.getElementById("traitsDisplay");
-    const virtueInput = document.getElementById("virtueInput");
-    const viceInput = document.getElementById("viceInput");
-    const momentInput = document.getElementById("momentInput");
-    const brinkInput = document.getElementById("brinkInput");
-
-    // Rendering
-    function renderCandles(){
-      candlesEl.innerHTML="";
-      state.candles.forEach((lit,i)=>{
-        const div=document.createElement("div");
-        div.className="candle "+(lit?"lit":"out");
-        div.dataset.index=i;
-        div.title="Click to toggle candle "+(i+1);
-        div.innerHTML=`<span>${i+1}</span>`;
-        candlesEl.appendChild(div);
-      });
-      const litCount=state.candles.filter(Boolean).length;
-      candleStats.textContent=`${litCount} candle(s) lit out of 10.`;
-      sceneStats.textContent=`Scene: ${state.scene} – Dice pool: ${state.sceneDice}`;
-      diceStats.textContent=`Current dice in pool: ${state.sceneDice}`;
-    }
-
-    function renderDiceResults(results,lost,success){
-      diceResultsDiv.innerHTML="";
-      results.forEach((v,i)=>{
-        const d=document.createElement("div");
-        d.className="die";
-        if(lost.includes(i))d.classList.add("lost");
-        if(success.includes(i))d.classList.add("success");
-        d.textContent=v;
-        diceResultsDiv.appendChild(d);
-      });
-    }
-
-    function renderTruths(){
-      truthsList.innerHTML="";
-      state.truths.forEach(t=>{
-        const li=document.createElement("li");
-        li.innerHTML=`<span class="truth-scene">Scene ${t.scene}:</span> ${t.text}`;
-        truthsList.appendChild(li);
-      });
-    }
-
-    function renderTraits(){
-      traitsDisplay.innerHTML="";
-      state.players.forEach((p,pi)=>{
-        const block=document.createElement("div");
-        const header=document.createElement("h3");
-        header.textContent=p.name;
-        block.appendChild(header);
-
-        [["Virtue","virtue"],["Vice","vice"],["Moment","moment"],["Brink","brink"]]
-        .forEach(([label,key])=>{
-          const trait=p.traits[key];
-          if(!trait.text)return;
-          const wrap=document.createElement("div");
-          wrap.className="trait"+(trait.burned?" burned":"");
-          const info=document.createElement("div");
-          info.innerHTML=`<div class='trait-label'>${label}</div><div>${trait.text}</div>`;
-          const btn=document.createElement("button");
-          btn.textContent=trait.burned?"Unburn":"Burn";
-          btn.className="secondary";
-          btn.onclick=()=>{
-            if(!trait.burned){
-              trait.burned=true;
-              burnTrait(pi,key);
-            }else{
-              trait.burned=false;
-              renderTraits();
-            }
-          };
-          wrap.append(info,btn);
-          block.appendChild(wrap);
-        });
-        traitsDisplay.appendChild(block);
-      });
-    }
-
-    // Logic
-    function blowOutNext(){
-      const idx=state.candles.findIndex(c=>c);
-      if(idx===-1)return;
-      state.candles[idx]=false;
-      state.scene++;
-      state.sceneDice=state.candles.filter(Boolean).length;
-      diceResultsDiv.innerHTML=""; rollOutcome.textContent="";
-      renderCandles();
-    }
-
-    function relightAll(){
-      state.candles=Array(10).fill(true);
-      state.scene=1; state.sceneDice=10; state.truths=[];
-      state.lastRoll=null; state.hopeDieActive=false;
-      state.players.forEach(p=>{
-        Object.keys(p.traits).forEach(k=>{
-          p.traits[k]={text:"",burned:false};
-        });
-      });
-      virtueInput.value=viceInput.value=momentInput.value=brinkInput.value="";
-      diceResultsDiv.innerHTML=""; rollOutcome.textContent="";
-      renderCandles(); renderTruths(); renderTraits();
-    }
-
-    function startNewScene(){
-      state.sceneDice=state.candles.filter(Boolean).length;
-      diceResultsDiv.innerHTML=""; rollOutcome.textContent="New scene started.";
-      renderCandles();
-    }
-
-    function rollDice(){
-      if(state.sceneDice<=0){rollOutcome.textContent="No dice left.";return;}
-      const diceCount=state.sceneDice;
-      const results=Array.from({length:diceCount},()=>Math.floor(Math.random()*6)+1);
-      if(state.hopeDieActive)results.push(Math.floor(Math.random()*6)+1);
-      const lost=results.map((v,i)=>v===1?i:-1).filter(i=>i!==-1);
-      const success=results.map((v,i)=>v===6?i:-1).filter(i=>i!==-1);
-      const lostCount=lost.length;
-      state.sceneDice=Math.max(0,state.sceneDice-lostCount);
-      const hasSuccess=success.length>0;
-      let msg=hasSuccess?`Success! ${lostCount} lost.`:`Failure. No 6s.`;
-      if(state.hopeDieActive){
-        const hope=results[results.length-1];
-        if(hope===1){state.hopeDieActive=false;msg+=" Hope die lost!";}
-        else msg+=" Hope die rolled "+hope+".";
-      }
-      state.lastRoll={results,lostIndices:lost,successIndices:success};
-      rollOutcome.textContent=msg;
-      renderDiceResults(results,lost,success); renderCandles();
-    }
-
-    function addTruth(){
-      const txt=truthText.value.trim(); if(!txt)return;
-      state.truths.push({scene:state.scene,text:txt});
-      truthText.value=""; renderTruths();
-    }
-
-    function applyTraits(){
-      const p=state.players[0];
-      p.traits.virtue.text=virtueInput.value.trim();
-      p.traits.vice.text=viceInput.value.trim();
-      p.traits.moment.text=momentInput.value.trim();
-      p.traits.brink.text=brinkInput.value.trim();
-      renderTraits();
-    }
-
-    function addPlayer(){
-      const n="Player "+(state.players.length+1);
-      state.players.push({
-        name:n, traits:{virtue:{text:"",burned:false},vice:{text:"",burned:false},moment:{text:"",burned:false},brink:{text:"",burned:false}}
-      });
-      renderTraits();
-    }
-
-    // Burn logic
-    function burnTrait(pi,key){
-      switch(key){
-        case"virtue":case"vice":burnVirtueOrVice(key);break;
-        case"moment":burnMoment();break;
-        case"brink":burnBrink();break;
-      }
-      renderTraits();
-    }
-
-    function burnVirtueOrVice(type){
-      const last=state.lastRoll;
-      if(!last||!last.lostIndices.length){rollOutcome.textContent=`You burned ${type}, but no 1s to reroll.`;return;}
-      const rerolled=last.lostIndices.map(()=>Math.floor(Math.random()*6)+1);
-      const successes=rerolled.filter(v=>v===6).length;
-      const rerollOnes=rerolled.filter(v=>v===1).length;
-      const restored=last.lostIndices.length-rerollOnes;
-      state.sceneDice+=restored;
-      rollOutcome.textContent=`You burned ${type} and rerolled ${last.lostIndices.length}. ${successes>0?"Success!":""} ${restored} dice restored.`;
-      state.lastRoll=null; renderCandles();
-    }
-
-    function burnMoment(){
-      if(state.hopeDieActive){rollOutcome.textContent="Hope die already active.";return;}
-      state.hopeDieActive=true;
-      rollOutcome.textContent="Moment burned! Hope die added (until it rolls 1).";
-    }
-
-    function burnBrink(){
-      if(state.sceneDice<=0){rollOutcome.textContent="No dice left.";return;}
-      const diceCount=state.sceneDice;
-      const results=Array.from({length:diceCount},()=>Math.floor(Math.random()*6)+1);
-      const lost=results.map((v,i)=>v===1?i:-1).filter(i=>i!==-1);
-      const success=results.map((v,i)=>v===6?i:-1).filter(i=>i!==-1);
-      state.sceneDice=Math.max(0,diceCount-lost.length);
-      rollOutcome.textContent=`Brink burned! Rerolled all ${diceCount} dice. ${success.length>0?"Success!":""}`;
-      renderDiceResults(results,lost,success); renderCandles();
-    }
-
-    // Events
-    blowOutBtn.onclick=blowOutNext;
-    relightBtn.onclick=relightAll;
-    newSceneBtn.onclick=startNewScene;
-    rollBtn.onclick=rollDice;
-    addTruthBtn.onclick=addTruth;
-    applyTraitsBtn.onclick=applyTraits;
-    addPlayerBtn.onclick=addPlayer;
-    candlesEl.onclick=e=>{
-      const c=e.target.closest(".candle"); if(!c)return;
-      const i=+c.dataset.index; state.candles[i]=!state.candles[i];
-      renderCandles();
-    };
-
-    // Init
-    renderCandles(); renderTruths(); renderTraits();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
